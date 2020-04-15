@@ -24,9 +24,9 @@ let isScrolling;
 //event contains the element which was clicked
 function collapsethis(event){
     
-    let style = sectionToCollapse.getAttribute('style');
 
-    sectionToCollapse =  (event.parentElement).querySelector('.collapse');
+    sectionToCollapse = (event.parentElement).querySelector('.collapse');
+    let style = sectionToCollapse.getAttribute('style');
     
     if(null === style || "" === style){
         sectionToCollapse.setAttribute('style', 'display:none');
