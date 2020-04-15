@@ -13,44 +13,54 @@
  * 
 */
 
-/**
- * Define Global Variables
- * 
-*/
+//store start time (to calculate execution time)
 let startingTime = performance.now();
+//contains all elements of class section
 const sections = document.querySelectorAll('section');
-const menuList = document.querySelector('#navbar__list');
-const header = document.querySelector('header');
+//used to store the timer
 let isScrolling;
-/**
- * End Global Variables
- * Start Helper Functions
- * 
-*/
 
+//colapse paragraph inside of section
+//event contains the element which was clicked
+function collapsethis(event){
+    
+    let style = sectionToCollapse.getAttribute('style');
+
+    sectionToCollapse =  (event.parentElement).querySelector('.collapse');
+    
+    if(null === style || "" === style){
+        sectionToCollapse.setAttribute('style', 'display:none');
+    }
+    else{
+        sectionToCollapse.setAttribute('style', '');
+    }
+     
+}
+
+//returns if element is in viewport (40% outside the top and 20% inside)
 function isInViewport(sectionToCheck){
+    
     var margins = sectionToCheck.getBoundingClientRect();
-
     return (margins.top > -(innerHeight * 0.4) && margins.top < innerHeight * 0.2 );
-  }
+}
 
-  function showHeader(value){
-      console.log(value);
-      if(value === true){
-          header.setAttribute('style','display:');
-      }
-      else
-      {
-        header.setAttribute('style','display:none');
-      }
-  }
-/**
- * End Helper Functions
- * Begin Main Functions
- * 
-*/
+//sets the header visibility
+function showHeader(value){
+    
+    let header = document.querySelector('header');
+    
+    if(value === true){
+    header.setAttribute('style','display:');
+    }
+    else{
+    header.setAttribute('style','display:none');
+    }
+}
 
-function createAnchors(sections){
+//Create anchor to section
+function createNavBar(){
+    
+    let menuList = document.querySelector('#navbar__list');
     menuList.innerHTML = "";
 
     for(const s of sections)
@@ -69,22 +79,16 @@ function createAnchors(sections){
         menuList.appendChild(li);
     }
 }
-/**
- * End Main Functions
- * Begin Events
- * 
-*/
 
 // Add class 'active' to section when near top of viewport
-
-document.addEventListener( 'scroll', event => {
-    
-    
+function addScrollEvent(){
+document.addEventListener( 'scroll', function() { 
+    scrollFunction();
     window.clearTimeout(isScrolling);
     showHeader(true);
     isScrolling = setTimeout(() => {
         showHeader(false);
-    }, 500);
+    }, 5000);
 
     for(var section of sections){
         if(isInViewport(section)){
@@ -95,14 +99,46 @@ document.addEventListener( 'scroll', event => {
             // set class to inactive
             section.classList.remove('your-active-class');
         }
-        // console.log(`section ${section.getAttribute('id')} = ${isInViewport(section)}`);
     }  
-  })
+  });
+}
+
+//hides go to top button if you're on the top and shows it if you're 20px down
+function scrollFunction() {
+  
+    if (document.documentElement.scrollTop > 20) {
+    document.querySelector('#goToTopButton').setAttribute('style','display:block');
+  } else {
+    document.querySelector('#goToTopButton').setAttribute('style','display:none');
+  }
+}
+
+//add even listener to goToTopButton
+function setupGoToTopButton(){
+
+    document.querySelector('#goToTopButton').addEventListener('click', function(){
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+    });
+
+}
+
+function configurePage(){
+    
+    //creates the anchor links to be used with the menu 
+    createNavBar();
+    
+    //adds the scroll event to the document
+    addScrollEvent();
+    
+    //Set the navigation bar show/hide timeout
+    setTimeout(function(){showHeader(false)},5000);
+
+    //setup go to top button
+    setupGoToTopButton();
+}
 
 
-  // build the nav
-createAnchors(sections);
-setTimeout(function(){showHeader(false)},2000);
+configurePage();
 
-// end build the nav
 console.log(`Total time in ms ${performance.now()-startingTime}`);
